@@ -16,7 +16,7 @@ public class SimulationClock {
      */
     public synchronized static void start(Date startDate, double speedMultiplier) {
         if (started)
-            throw new IllegalStateException();
+            throw new IllegalStateException("The SimulationClock was already running. It can only be start()ed once.");
         started = true;
         simulatedStartDate = startDate;
         actualStartDate = new Date();
@@ -30,7 +30,7 @@ public class SimulationClock {
      */
     public static long simulatedDelay(long actualMilliseconds) {
         if (!started)
-            throw new IllegalStateException();
+            throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         return (long) (actualMilliseconds * speedMultiplier);
     }
 
@@ -41,7 +41,7 @@ public class SimulationClock {
      */
     public static long actualDelay(long simulatedMilliseconds) {
         if (!started)
-            throw new IllegalStateException();
+            throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         return (long) (simulatedMilliseconds / speedMultiplier);
     }
 
@@ -50,7 +50,7 @@ public class SimulationClock {
      */
     public static Date currentSimulationDate() {
         if (!started)
-            throw new IllegalStateException();
+            throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         Date actualNow = new Date();
         long actualDifference = actualNow.getTime() - actualStartDate.getTime();
         long simulatedDifference = simulatedDelay(actualDifference);
