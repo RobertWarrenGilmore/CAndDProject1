@@ -29,6 +29,8 @@ public class SimulationClock {
      * @return the same duration in simulated milliseconds
      */
     public static long simulatedDelay(long actualMilliseconds) {
+        if (!started)
+            throw new IllegalStateException();
         return (long) (actualMilliseconds * speedMultiplier);
     }
 
@@ -38,6 +40,8 @@ public class SimulationClock {
      * @return the same duration in simulated milliseconds
      */
     public static long actualDelay(long simulatedMilliseconds) {
+        if (!started)
+            throw new IllegalStateException();
         return (long) (simulatedMilliseconds / speedMultiplier);
     }
 
@@ -45,6 +49,8 @@ public class SimulationClock {
      * @return the current Date, according to the simulation
      */
     public static Date currentSimulationDate() {
+        if (!started)
+            throw new IllegalStateException();
         Date actualNow = new Date();
         long actualDifference = actualNow.getTime() - actualStartDate.getTime();
         long simulatedDifference = simulatedDelay(actualDifference);
