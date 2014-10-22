@@ -1,6 +1,10 @@
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Created by Robert Gilmore.
+ */
 public class Logger {
 
     /**
@@ -9,8 +13,7 @@ public class Logger {
      * @param actionName What is the action?
      */
     public static void logAction(String actorName, String actionName) {
-        Date currentDate = SimulationClock.currentSimulationDate();
-        String timeOfDay = new SimpleDateFormat("HH:mm").format(currentDate);
+        String timeOfDay = SimulationClock.currentTimeString();
         String message = timeOfDay + " " + actorName + " " + actionName + ".";
         System.out.println(message);
     }
