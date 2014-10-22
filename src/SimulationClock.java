@@ -1,5 +1,3 @@
-package canddproject1;
-
 import java.util.Date;
 
 public class SimulationClock {

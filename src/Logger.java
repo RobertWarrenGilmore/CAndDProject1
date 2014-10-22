@@ -1,5 +1,3 @@
-package canddproject1;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
