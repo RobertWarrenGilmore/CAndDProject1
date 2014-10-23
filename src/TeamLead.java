@@ -18,8 +18,8 @@ public class TeamLead extends DummyEmployee {
             log("receives a question");
 
             // Flip a coin.
-            boolean heads = (Math.random() < 0.5);
-            if (heads) {
+            boolean answerable = (Math.random() < 0.5);
+            if (!answerable) {
                 // Let's ask the PM.
                 log("takes a question to the head honcho");
                 boss.askQuestion();
