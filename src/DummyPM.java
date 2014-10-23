@@ -3,6 +3,8 @@
  */
 public class DummyPM extends DummyEmployee {
 
+    private SimulationClock.Stopwatch answeringQuestionsWatch = new SimulationClock.Stopwatch();
+
     public DummyPM(String name) {
         super("PM", name);
     }
@@ -10,13 +12,17 @@ public class DummyPM extends DummyEmployee {
     public void askQuestion() {
         synchronized (this) {
             log("receives a question");
-            try {
-                // The buck stops here, but give it ten minutes.
-                wait(SimulationClock.actualDelay(10 * 60 * 1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            answeringQuestionsWatch.start();
+
+            // The buck stops here, but give it ten minutes.
+            SimulationClock.waitMinutes(10);
+
+            answeringQuestionsWatch.pause();
             log("answers a question");
         }
+    }
+
+    public int getTimeSpentAnsweringQuestions() {
+        return answeringQuestionsWatch.totalTimeElapsed();
     }
 }

@@ -46,8 +46,9 @@ public class SimulationClock {
      * Pauses the current thread until the simulated time specified.
      * @param clockHour the hour of the simulated time until which to wait
      * @param clockMinute the minute of the simulated time until which to wait
+     * @return the simulated duration of the wait in minutes
      */
-    public static void waitUntil(int clockHour, int clockMinute) {
+    public static int waitUntil(int clockHour, int clockMinute) {
         if (!started)
             throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         Calendar until = getNext(clockHour, clockMinute);
@@ -58,6 +59,92 @@ public class SimulationClock {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return 0;
+    }
+
+    /**
+     * Check the current simulated time.
+     * @return the current simulated time in a string of the format "HH:mm"
+     */
+    public static String currentTimeString() {
+        return new SimpleDateFormat("HH:mm").format(currentSimulationDate());
+    }
+
+    /**
+     * Stopwatch acts like, well, a stopwatch. It counts minutes on the SimulationClock.
+     */
+    public static class Stopwatch {
+
+        private Calendar startDate;
+        private long committedDuration = 0, lapTime = 0;
+
+        /**
+         * Check whether the watch is running.
+         * @return true if the watch is running, false otherwise
+         */
+        public boolean isRunning() {
+            return startDate != null;
+        }
+
+        /**
+         * Starts or resumes the watch.
+         */
+        public void start() {
+            if (isRunning())
+                throw new IllegalStateException("The Stopwatch was already running. It can only be start()ed when it is not running.");
+            startDate = GregorianCalendar.getInstance();
+            lapTime = 0;
+        }
+
+        /**
+         * Pauses the watch.
+         */
+        public void pause() {
+            if (!isRunning())
+                throw new IllegalStateException("The Stopwatch is not running. It can only be stop()ped when it is running.");
+
+            // Commit the lap time.
+            lapTime = currentSimulationDate().getTimeInMillis() - startDate.getTimeInMillis();
+            committedDuration += lapTime;
+            // Clear the running state.
+            startDate = null;
+        }
+
+        /**
+         * Sets the time elapsed to zero and pauses the watch.
+         */
+        public void reset() {
+            pause();
+            lapTime = 0;
+            committedDuration = 0;
+        }
+
+        /**
+         * @return how many simulated minutes have been counted since the last reset
+         */
+        public int totalTimeElapsed(){
+            long milliseconds = committedDuration;
+            if (isRunning())
+                milliseconds += currentSimulationDate().getTimeInMillis() - startDate.getTimeInMillis();
+            else
+                milliseconds += lapTime;
+            int minutes = (int) (milliseconds / (60 * 1000));
+            return minutes;
+        }
+
+        /**
+         * @return how many simulated minutes have been counted since the last start
+         */
+        public int lapTimeElapsed(){
+            long milliseconds;
+            if (isRunning())
+                milliseconds = currentSimulationDate().getTimeInMillis() - startDate.getTimeInMillis();
+            else
+                milliseconds = lapTime;
+            int minutes = (int) (milliseconds / (60 * 1000));
+            return minutes;
+        }
+
     }
 
     /**
@@ -82,6 +169,12 @@ public class SimulationClock {
         return (long) (simulatedMilliseconds / speedMultiplier);
     }
 
+    /**
+     * Gets the next simulated date that has a given clock time.
+     * @param hour the hour, from 0 to 23
+     * @param minute the minute, from 0 to 60
+     * @return the Calendar corresponding to the next simulated date when it will be the given time
+     */
     private static Calendar getNext(int hour, int minute) {
         Calendar currentDate = SimulationClock.currentSimulationDate();
         Calendar desiredDate = GregorianCalendar.getInstance();
@@ -109,10 +202,6 @@ public class SimulationClock {
         Calendar simulatedNow = GregorianCalendar.getInstance();
         simulatedNow.setTimeInMillis(simulatedStartTime + simulatedDifference);
         return simulatedNow;
-    }
-
-    public static String currentTimeString() {
-        return new SimpleDateFormat("HH:mm").format(currentSimulationDate());
     }
 
 }
