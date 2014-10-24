@@ -25,16 +25,27 @@ public abstract class DummyEmployee extends Thread {
         SimulationClock.waitUntil(8, clockInLatenessMinutes);
         clockIn();
 
-        // TODO Let the subclass do work stuff until lunch time.
+        // Let the subclass do work stuff until lunch time.
+        doWorkUntil(12, 0);
 
+        SimulationClock.waitUntil(12, 0);
         clockOutForLunch();
         SimulationClock.waitMinutes(30);
         clockInFromLunch();
 
-        //TODO Let the subclass do work stuff until the end of the shift.
+        // Let the subclass do work stuff until the end of the shift.
+        doWorkUntil(4, 30);
 
+        SimulationClock.waitUntil(4, 30);
         clockOut();
     }
+
+    /**
+     * Does work specific to the subclass's job role,
+     * @param clockHour the hour until which to work
+     * @param clockMinute the minute until which to work
+     */
+    protected abstract void doWorkUntil(int clockHour, int clockMinute);
 
     private void clockIn() {
         workWatch.reset();
