@@ -35,10 +35,12 @@ public class SimulationClock {
             throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         long simulatedMilliseconds = simulatedMinutes * 60 * 1000;
         long actualMilliseconds = actualDelay(simulatedMilliseconds);
-        try {
-            Thread.currentThread().wait(actualMilliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (actualMilliseconds > 0) {
+            try {
+                Thread.currentThread().wait(actualMilliseconds);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -54,12 +56,14 @@ public class SimulationClock {
         Calendar until = getNext(clockHour, clockMinute);
         long simulatedDelay = until.getTimeInMillis() - currentSimulationDate().getTimeInMillis();
         long actualDelay = actualDelay(simulatedDelay);
-        try {
-            Thread.currentThread().wait(actualDelay);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (actualDelay > 0) {
+            try {
+                Thread.currentThread().wait(actualDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return 0;
+        return (int) (simulatedDelay / (60 * 1000));
     }
 
     /**
@@ -184,22 +188,18 @@ public class SimulationClock {
     }
 
     /**
-     * Gets the next simulated date that has a given clock time.
+     * Gets the simulated date that has a given clock time on the same day as the start time.
      * @param hour the hour, from 0 to 23
      * @param minute the minute, from 0 to 60
      * @return the Calendar corresponding to the next simulated date when it will be the given time
      */
     private static Calendar getNext(int hour, int minute) {
-        Calendar currentDate = SimulationClock.currentSimulationDate();
         Calendar desiredDate = GregorianCalendar.getInstance();
-        desiredDate.setTimeInMillis(currentDate.getTimeInMillis());
+        desiredDate.setTimeInMillis(simulatedStartDate.getTimeInMillis());
         desiredDate.set(Calendar.HOUR_OF_DAY, hour);
         desiredDate.set(Calendar.MINUTE, minute);
         desiredDate.set(Calendar.SECOND, 0);
         desiredDate.set(Calendar.MILLISECOND, 0);
-        if (desiredDate.before(currentDate)) {
-            desiredDate.add(Calendar.DATE, 1);
-        }
         return desiredDate;
     }
 
