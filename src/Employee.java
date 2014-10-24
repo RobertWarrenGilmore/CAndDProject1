@@ -1,68 +1,71 @@
-import java.util.Date;
+/**
+ * Created by Robert Gilmore.
+ * Edited by Courtney McGorrill.
+ */
 
+public abstract class Employee  extends Thread {
 
-public abstract class Employee {
+	private String jobTitle;
+    private SimulationClock.Stopwatch workWatch = new SimulationClock.Stopwatch();
+    private SimulationClock.Stopwatch lunchWatch = new SimulationClock.Stopwatch();
 
-	protected Date timeIn;
-	protected Date timeOut;
-	protected Date lunchOut;
-	protected Date lunchIn;
 	
-	public Employee(SimulationClock clock) {
+	public Employee(String jobTitle, String name) {
+        super(name);
+        this.jobTitle = jobTitle;
+    }
+	
+	public void log(String actionName) {
+        Logger.logAction(jobTitle + " " + getName(), actionName);
+    }
+	
+	public void run() {
+        int clockInLatenessMinutes = (int) (Math.random() * 31);
+        SimulationClock.waitUntil(8, clockInLatenessMinutes);
+        clockIn();
 
-	}
-	
-	public boolean clockIn() {
-		Date currentTime = SimulationClock.currentSimulationDate();
-		//while current time is before 8, wait
-		while(true) {
-			break;
-		}
-		//if the time is between 8 and 8:30, set timeIn
-		if(true) {
-			//timeIn = currentTime;
-			return true;
-		} else {
-			//illegal state
-			return false;
-		}
-			
-	}
-	
-	public boolean takeLunch() {
-		//if employee is on the clock
-		if(timeIn != null) {
-			//set lunchOut
-			return true;
-		} else {
-			//illegal state
-			return false;
-		}
-		
-	}
-	
-	public boolean returnFromLunch() {
-		//if on lunch
-		if(lunchOut != null) {
-			//if duration of lunch is valid
-			if(true) {
-				//set lunchIn
-				return true;
-			}
-		} 
-		return false;
-	}
-	
-	public boolean clockOut() {
-		//if on the clock and returned from lunch
-		if(lunchIn != null) {
-			//if duration on the clock is valid
-			if(true){
-				//set time out
-				return true;
-			}
-		}
-		return false;
-	}
+        // TODO Let the subclass do work stuff until lunch time.
+
+        clockOutForLunch();
+        SimulationClock.waitMinutes(30);
+        clockInFromLunch();
+
+        //TODO Let the subclass do work stuff until the end of the shift.
+
+        clockOut();
+    }
+
+    protected void clockIn() {
+        workWatch.reset();
+        workWatch.start();
+        log("clocked in");
+    }
+
+    protected void clockOutForLunch() {
+        workWatch.pause();
+        lunchWatch.reset();
+        lunchWatch.start();
+        log("clocked out for lunch");
+    }
+
+    protected void clockInFromLunch() {
+        lunchWatch.pause();
+        workWatch.start();
+        log("clocked in from lunch");
+    }
+
+    protected void clockOut() {
+        workWatch.pause();
+        log("clocked out");
+    }
+
+    public double getHoursWorked() {
+        int minutesWorked = workWatch.totalTimeElapsed();
+        return minutesWorked / 60;
+    }
+    
+    public void projectStatusMeeting(){
+    	
+    }
 
 }
