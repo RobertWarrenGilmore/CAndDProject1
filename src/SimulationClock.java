@@ -3,7 +3,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Created by Robert Gilmore.
+ * SimulationClock keeps track of a simulated timeline that starts at a given date and progresses at a given rate relative to real time.
  */
 public class SimulationClock {
 
@@ -60,6 +60,20 @@ public class SimulationClock {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * Check how many simulated minutes (rounded down) remain until the given time.
+     * @param clockHour the hour of the simulated time to check
+     * @param clockMinute the minute of the simulated time to check
+     */
+    public int getMinutesUntil(int clockHour, int clockMinute) {
+        if (!started)
+            throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
+        Calendar until = getNext(clockHour, clockMinute);
+        long milliseconds = until.getTimeInMillis() - currentSimulationDate().getTimeInMillis();
+        int minutes = (int) (milliseconds / (60 * 1000));
+        return minutes;
     }
 
     /**
