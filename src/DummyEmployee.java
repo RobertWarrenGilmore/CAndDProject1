@@ -2,12 +2,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-/**
- * Created by Robert Gilmore.
- */
 public abstract class DummyEmployee extends Thread {
 
     private String jobTitle;
+    private boolean working = false;
     private SimulationClock.Stopwatch workWatch = new SimulationClock.Stopwatch();
     private SimulationClock.Stopwatch lunchWatch = new SimulationClock.Stopwatch();
 
@@ -29,9 +27,11 @@ public abstract class DummyEmployee extends Thread {
         doWorkUntil(12, 0);
 
         SimulationClock.waitUntil(12, 0);
-        clockOutForLunch();
-        SimulationClock.waitMinutes(30);
-        clockInFromLunch();
+        synchronized (this) {
+            clockOutForLunch();
+            SimulationClock.waitMinutes(30);
+            clockInFromLunch();
+        }
 
         // Let the subclass do work stuff until the end of the shift.
         doWorkUntil(4, 30);
@@ -47,28 +47,40 @@ public abstract class DummyEmployee extends Thread {
      */
     protected abstract void doWorkUntil(int clockHour, int clockMinute);
 
+    public boolean isWorking() {
+        return working;
+    }
+
     private void clockIn() {
-        workWatch.reset();
-        workWatch.start();
-        log("clocked in");
+        synchronized (this) {
+            workWatch.reset();
+            workWatch.start();
+            working = true;
+            log("clocked in");
+        }
     }
 
     private void clockOutForLunch() {
         workWatch.pause();
         lunchWatch.reset();
         lunchWatch.start();
+        working = false;
         log("clocked out for lunch");
     }
 
     private void clockInFromLunch() {
         lunchWatch.pause();
         workWatch.start();
+        working = true;
         log("clocked in from lunch");
     }
 
     private void clockOut() {
-        workWatch.pause();
-        log("clocked out");
+        synchronized (this) {
+            workWatch.pause();
+            working = false;
+            log("clocked out");
+        }
     }
 
     public double getHoursWorked() {
