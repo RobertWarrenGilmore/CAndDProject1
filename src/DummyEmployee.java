@@ -19,12 +19,13 @@ public abstract class DummyEmployee extends Thread {
     }
 
     public void run() {
-        int clockInLatenessMinutes = (int) (Math.random() * 31);
-        SimulationClock.waitUntil(8, clockInLatenessMinutes);
-        clockIn();
+        synchronized (this) {
+            int clockInLatenessMinutes = (int) (Math.random() * 31);
+            SimulationClock.waitUntil(8, clockInLatenessMinutes);
+            clockIn();
+        }
 
-        // Let the subclass do work stuff until lunch time.
-        doWorkUntil(12, 0);
+        // TODO Let the subclass do meetings or ask questions or whatever until lunch time.
 
         SimulationClock.waitUntil(12, 0);
         synchronized (this) {
@@ -33,19 +34,18 @@ public abstract class DummyEmployee extends Thread {
             clockInFromLunch();
         }
 
-        // Let the subclass do work stuff until the end of the shift.
-        doWorkUntil(4, 30);
+        // TODO Let the subclass do meetings or ask questions or whatever until the end of the day.
 
         SimulationClock.waitUntil(4, 30);
-        clockOut();
+        synchronized (this) {
+            clockOut();
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
-    /**
-     * Does work specific to the subclass's job role,
-     * @param clockHour the hour until which to work
-     * @param clockMinute the minute until which to work
-     */
-    protected abstract void doWorkUntil(int clockHour, int clockMinute);
 
     public boolean isWorking() {
         return working;

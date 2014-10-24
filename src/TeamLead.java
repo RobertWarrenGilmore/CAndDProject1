@@ -29,9 +29,4 @@ public class TeamLead extends DummyEmployee {
             return;
         }
     }
-
-    @Override
-    protected void doWorkUntil(int clockHour, int clockMinute) {
-        
-    }
 }
