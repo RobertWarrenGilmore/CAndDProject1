@@ -16,6 +16,7 @@ public abstract class DummyEmployee extends Thread {
         super(name);
         busyLock.lock();
         this.jobTitle = jobTitle;
+        this.start();
     }
 
     public void log(String actionName) {
