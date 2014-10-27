@@ -1,6 +1,6 @@
 import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class DummyEmployee extends Thread {
+public abstract class Employee extends Thread {
 
     private String jobTitle;
     private SimulationClock.Stopwatch workWatch = new SimulationClock.Stopwatch();
@@ -12,7 +12,7 @@ public abstract class DummyEmployee extends Thread {
     protected int leavingMinute = 30;
     protected ReentrantLock busyLock;
 
-    public DummyEmployee(String jobTitle, String name) {
+    public Employee(String jobTitle, String name) {
         super(name);
         this.jobTitle = jobTitle;
         this.start();

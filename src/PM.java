@@ -1,8 +1,8 @@
-public class DummyPM extends DummyEmployee {
+public class PM extends Employee {
 
     private SimulationClock.Stopwatch answeringQuestionsWatch = new SimulationClock.Stopwatch();
 
-    public DummyPM(String name) {
+    public PM(String name) {
         super("PM", name);
     }
 
@@ -25,7 +25,7 @@ public class DummyPM extends DummyEmployee {
 
     @Override
     protected void doMorningWork() {
-        
+
     }
 
     @Override

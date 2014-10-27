@@ -1,9 +1,9 @@
 
-public class DummyDeveloper extends DummyEmployee {
+public class Developer extends Employee {
 
     TeamLead boss;
 
-    public DummyDeveloper(String name, TeamLead boss) {
+    public Developer(String name, TeamLead boss) {
         super("developer", name);
         this.boss = boss;
     }

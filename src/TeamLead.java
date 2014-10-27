@@ -1,8 +1,8 @@
-public class TeamLead extends DummyEmployee {
+public class TeamLead extends Employee {
 
-    private DummyPM boss;
+    private PM boss;
 
-    public TeamLead(String name, DummyPM boss) {
+    public TeamLead(String name, PM boss) {
         super("team lead", name);
         this.boss = boss;
     }
