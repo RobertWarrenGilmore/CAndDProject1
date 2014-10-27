@@ -8,13 +8,12 @@ public abstract class DummyEmployee extends Thread {
     protected int lunchHour = 12;
     protected int lunchMinute = 0;
     protected int lunchDuration = 30;
-    protected int leavingHour = 4;
+    protected int leavingHour = 16;
     protected int leavingMinute = 30;
-    protected ReentrantLock busyLock = new ReentrantLock();
+    protected ReentrantLock busyLock;
 
     public DummyEmployee(String jobTitle, String name) {
         super(name);
-        busyLock.lock();
         this.jobTitle = jobTitle;
         this.start();
     }
@@ -24,6 +23,9 @@ public abstract class DummyEmployee extends Thread {
     }
 
     public void run() {
+        busyLock = new ReentrantLock();
+        busyLock.lock();
+
         // Clock in some time between 08:00 and 08:30.
         int clockInLatenessMinutes = (int) (Math.random() * 31);
         SimulationClock.waitUntil(8, clockInLatenessMinutes);
