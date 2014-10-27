@@ -10,6 +10,7 @@ public abstract class DummyEmployee extends Thread {
     private String jobTitle;
     private SimulationClock.Stopwatch workWatch = new SimulationClock.Stopwatch();
     private SimulationClock.Stopwatch lunchWatch = new SimulationClock.Stopwatch();
+    protected int lunchLength = 30;
 
     public DummyEmployee(String jobTitle, String name) {
         super(name);
@@ -28,7 +29,7 @@ public abstract class DummyEmployee extends Thread {
         // TODO Let the subclass do work stuff until lunch time.
 
         clockOutForLunch();
-        SimulationClock.waitMinutes(30);
+        SimulationClock.waitMinutes(lunchLength);
         clockInFromLunch();
 
         //TODO Let the subclass do work stuff until the end of the shift.
