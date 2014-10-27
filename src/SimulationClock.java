@@ -37,7 +37,9 @@ public class SimulationClock {
         long actualMilliseconds = actualDelay(simulatedMilliseconds);
         if (actualMilliseconds > 0) {
             try {
-                Thread.currentThread().wait(actualMilliseconds);
+                synchronized (Thread.currentThread()) {
+                    Thread.currentThread().wait(actualMilliseconds);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -58,7 +60,9 @@ public class SimulationClock {
         long actualDelay = actualDelay(simulatedDelay);
         if (actualDelay > 0) {
             try {
-                Thread.currentThread().wait(actualDelay);
+                synchronized (Thread.currentThread()) {
+                    Thread.currentThread().wait(actualDelay);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
