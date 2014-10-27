@@ -89,7 +89,7 @@ public class SimulationClock {
      * @return the current simulated time in a string of the format "HH:mm"
      */
     public static String currentTimeString() {
-        return new SimpleDateFormat("HH:mm").format(currentSimulationDate());
+        return new SimpleDateFormat("HH:mm").format(currentSimulationDate().getTime());
     }
 
     /**
@@ -136,7 +136,8 @@ public class SimulationClock {
          * Sets the time elapsed to zero and pauses the watch.
          */
         public void reset() {
-            pause();
+            if (isRunning())
+                pause();
             lapTime = 0;
             committedDuration = 0;
         }
