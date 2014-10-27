@@ -1,17 +1,20 @@
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class DummyEmployee extends Thread {
 
     private String jobTitle;
-    private boolean working = false;
     private SimulationClock.Stopwatch workWatch = new SimulationClock.Stopwatch();
     private SimulationClock.Stopwatch lunchWatch = new SimulationClock.Stopwatch();
-    protected int lunchLength = 30;
+    protected int lunchHour = 12;
+    protected int lunchMinute = 0;
+    protected int lunchDuration = 30;
+    protected int leavingHour = 4;
+    protected int leavingMinute = 30;
+    protected ReentrantLock busyLock = new ReentrantLock();
 
     public DummyEmployee(String jobTitle, String name) {
         super(name);
+        busyLock.lock();
         this.jobTitle = jobTitle;
     }
 
@@ -20,73 +23,63 @@ public abstract class DummyEmployee extends Thread {
     }
 
     public void run() {
-        synchronized (this) {
-            int clockInLatenessMinutes = (int) (Math.random() * 31);
-            SimulationClock.waitUntil(8, clockInLatenessMinutes);
-            clockIn();
-        }
+        // Clock in some time between 08:00 and 08:30.
+        int clockInLatenessMinutes = (int) (Math.random() * 31);
+        SimulationClock.waitUntil(8, clockInLatenessMinutes);
+        clockIn();
 
-        // TODO Let the subclass do meetings or ask questions or whatever until lunch time.
+        // Let the subclass do meetings or ask questions or whatever until lunch time.
+        doMorningWork();
 
-        SimulationClock.waitUntil(12, 0);
-        synchronized (this) {
-            clockOutForLunch();
-            SimulationClock.waitMinutes(30);
-            clockInFromLunch();
-        }
+        // Do lunch.
+        SimulationClock.waitUntil(lunchHour, lunchMinute);
+        clockOutForLunch();
+        SimulationClock.waitMinutes(lunchDuration);
+        clockInFromLunch();
 
-        // TODO Let the subclass do meetings or ask questions or whatever until the end of the day.
+        // Let the subclass do meetings or ask questions or whatever until the end of the day.
+        doAfternoonWork();
 
-        SimulationClock.waitUntil(4, 30);
-        synchronized (this) {
-            clockOut();
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public boolean isWorking() {
-        return working;
+        // Clock out at the clock-out time.
+        SimulationClock.waitUntil(leavingHour, leavingMinute);
+        clockOut();
     }
 
     private void clockIn() {
-        synchronized (this) {
-            workWatch.reset();
-            workWatch.start();
-            working = true;
-            log("clocked in");
-        }
+        workWatch.reset();
+        workWatch.start();
+        log("clocked in");
+        busyLock.unlock();
     }
 
     private void clockOutForLunch() {
+        busyLock.lock();
         workWatch.pause();
         lunchWatch.reset();
         lunchWatch.start();
-        working = false;
         log("clocked out for lunch");
     }
 
     private void clockInFromLunch() {
         lunchWatch.pause();
         workWatch.start();
-        working = true;
         log("clocked in from lunch");
+        busyLock.unlock();
     }
 
     private void clockOut() {
-        synchronized (this) {
-            workWatch.pause();
-            working = false;
-            log("clocked out");
-        }
+        busyLock.lock();
+        workWatch.pause();
+        log("clocked out");
     }
 
     public double getHoursWorked() {
         int minutesWorked = workWatch.totalTimeElapsed();
         return minutesWorked / 60;
     }
+
+    protected abstract void doMorningWork();
+
+    protected abstract void doAfternoonWork();
 
 }

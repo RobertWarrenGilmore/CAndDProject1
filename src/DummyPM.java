@@ -22,4 +22,14 @@ public class DummyPM extends DummyEmployee {
     public int getTimeSpentAnsweringQuestions() {
         return answeringQuestionsWatch.totalTimeElapsed();
     }
+
+    @Override
+    protected void doMorningWork() {
+        
+    }
+
+    @Override
+    protected void doAfternoonWork() {
+
+    }
 }

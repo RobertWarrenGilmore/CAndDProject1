@@ -8,4 +8,13 @@ public class DummyDeveloper extends DummyEmployee {
         this.boss = boss;
     }
 
+    @Override
+    protected void doMorningWork() {
+
+    }
+
+    @Override
+    protected void doAfternoonWork() {
+
+    }
 }
