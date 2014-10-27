@@ -1,6 +1,3 @@
-/**
- * Created by Robert Gilmore.
- */
 public class TeamLead extends DummyEmployee {
 
     private DummyPM boss;
@@ -32,5 +29,4 @@ public class TeamLead extends DummyEmployee {
             return;
         }
     }
-
 }

@@ -1,6 +1,4 @@
-/**
- * Created by Robert Gilmore.
- */
+
 public class DummyDeveloper extends DummyEmployee {
 
     TeamLead boss;
@@ -9,4 +7,5 @@ public class DummyDeveloper extends DummyEmployee {
         super("developer", name);
         this.boss = boss;
     }
+
 }

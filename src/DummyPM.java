@@ -1,6 +1,3 @@
-/**
- * Created by Robert Gilmore.
- */
 public class DummyPM extends DummyEmployee {
 
     private SimulationClock.Stopwatch answeringQuestionsWatch = new SimulationClock.Stopwatch();
