@@ -211,7 +211,7 @@ public class SimulationClock {
     /**
      * @return the current date, according to the simulation
      */
-    private static Calendar currentSimulationDate() {
+    public static Calendar currentSimulationDate() {
         if (!started)
             throw new IllegalStateException("The SimulationClock hasn't been started. Call start() first.");
         Calendar actualNow = GregorianCalendar.getInstance();

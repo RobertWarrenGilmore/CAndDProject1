@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class Employee extends Thread {
@@ -10,7 +11,7 @@ public abstract class Employee extends Thread {
     protected int lunchDuration = 30;
     protected int leavingHour = 16;
     protected int leavingMinute = 30;
-    protected ReentrantLock busyLock;
+    protected ReentrantLock busyLock = new ReentrantLock();
 
     public Employee(String jobTitle, String name) {
         super(name);
@@ -23,23 +24,28 @@ public abstract class Employee extends Thread {
     }
 
     public void run() {
-        busyLock = new ReentrantLock();
-        busyLock.lock();
-
         // Clock in some time between 08:00 and 08:30.
         int clockInLatenessMinutes = (int) (Math.random() * 31);
+        
+        // PM isn't late
+        if (this instanceof PM) {
+        	clockInLatenessMinutes = 0;
+        }
+        
         SimulationClock.waitUntil(8, clockInLatenessMinutes);
         clockIn();
 
-        // Let the subclass do meetings or ask questions or whatever until lunch time.
+        // Let the subclass conduct morning meetings
         doMorningWork();
+        
+        askQuestions();
 
         // Do lunch.
         SimulationClock.waitUntil(lunchHour, lunchMinute);
         clockOutForLunch();
         SimulationClock.waitMinutes(lunchDuration);
         clockInFromLunch();
-
+        
         // Let the subclass do meetings or ask questions or whatever until the end of the day.
         doAfternoonWork();
 
@@ -49,10 +55,9 @@ public abstract class Employee extends Thread {
     }
 
     private void clockIn() {
-        workWatch.reset();
+    	workWatch.reset();
         workWatch.start();
         log("clocked in");
-        busyLock.unlock();
     }
 
     private void clockOutForLunch() {
@@ -67,7 +72,6 @@ public abstract class Employee extends Thread {
         lunchWatch.pause();
         workWatch.start();
         log("clocked in from lunch");
-        busyLock.unlock();
     }
 
     private void clockOut() {
@@ -76,6 +80,20 @@ public abstract class Employee extends Thread {
         log("clocked out");
     }
 
+    private void askQuestions() {
+    	while(SimulationClock.currentSimulationDate().getTime().getHours() < lunchHour) {
+        	try {
+				if( (int)Math.random() * 100 < 2) {
+					log(" asks a question!");
+				}
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+    }
+    
     public double getHoursWorked() {
         int minutesWorked = workWatch.totalTimeElapsed();
         return minutesWorked / 60;

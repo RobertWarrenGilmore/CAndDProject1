@@ -1,6 +1,12 @@
+import java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class TeamLead extends Employee {
 
     private PM boss;
+    private List<Developer> developers = Collections.synchronizedList(new ArrayList<Developer>());
 
     public TeamLead(String name, PM boss) {
         super("team lead", name);
@@ -28,13 +34,43 @@ public class TeamLead extends Employee {
         busyLock.unlock();
     }
 
+    public void addEmployee(Developer dev) {
+    	this.developers.add(dev);
+    }
+    
     @Override
     protected void doMorningWork() {
-
+    	this.boss.goToMorningMeeting(this);
+    	this.conductTeamMeeting();
     }
+    
+    public void conductTeamMeeting() {
+    	ConferenceRoom confRoom = this.boss.getConferenceRoom(); 
+    	confRoom.getLock().lock();
+    	
+    	log(" gains access to the conference room.");
+    	
+    	for(Developer dev : developers) {
+    		dev.attendTeamMeeting();
+    	}
+		
+    	log(" starts standup meeting.");
+    	SimulationClock.waitMinutes(15);
+    	
+    	log(" completes standup meeting.");
+    	confRoom.getLock().unlock();
+    	
+    	for(Developer dev : developers) {
+    		dev.returnToWork();
+    	}
+	}
 
     @Override
     protected void doAfternoonWork() {
 
+    }
+    
+    public List<Developer> getDevelopers() {
+    	return this.developers;
     }
 }
