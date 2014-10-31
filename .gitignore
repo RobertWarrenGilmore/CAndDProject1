@@ -1,2 +1,5 @@
 .idea/
 ConcurrentGrep.iml
+.classpath
+.project
+bin/
