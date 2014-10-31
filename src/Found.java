@@ -17,4 +17,12 @@ public class Found {
     public List<String> getLines() {
         return Arrays.asList(lines);
     }
+    
+    public String toString() {
+    	String string = "";
+    	for(String l : lines){
+    		string.concat(l + "\n");
+    	}
+    	return string;
+    }
 }

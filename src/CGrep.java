@@ -1,21 +1,27 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class CGrep {
 
 	 private static void solve(Executor e, Collection<Callable<Found>> solvers) throws InterruptedException, ExecutionException {
-	     CompletionService<Found> ecs = new ExecutorCompletionService<Found>(e);
-	     for (Callable<Found> s : solvers)
-	         ecs.submit(s);
+	     ExecutorCompletionService<Found> ecs = new ExecutorCompletionService<Found>(e);
 	     int n = solvers.size();
-	     for (int i = 0; i < n; ++i) {
-	         Found f = ecs.take().get();
-	         if (f != null) {
-	             System.out.println(f.getFileName() +" completed.");
+	     List<Future<Found>> futures
+	         = new ArrayList<Future<Found>>(n);
+	     Found result = null;
+	     for (Callable<Found> s : solvers)
+	         futures.add(ecs.submit(s));
+	     for (Future<Found> f : futures) {
+	    	 result = f.get();
+	         if (result != null) {
+	             System.out.println(result.getFileName() +" completed.");
+	             System.out.println(result);
 	         }
 	     }
+	     
 	 }
 	
     public static void main(String[] args) throws InterruptedException, ExecutionException{
@@ -27,5 +33,6 @@ public class CGrep {
         }
         ExecutorService e = Executors.newFixedThreadPool(3);
         solve(e, solvers);
+        e.shutdown();
     }
 }
