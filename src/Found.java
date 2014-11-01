@@ -21,7 +21,7 @@ public class Found {
     public String toString() {
     	String string = "";
     	for(String l : lines){
-    		string.concat(l + "\n");
+    		string = string.concat(l + "\n");
     	}
     	return string;
     }
