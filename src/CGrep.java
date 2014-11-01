@@ -8,14 +8,10 @@ public class CGrep {
 
 	 private static void solve(Executor e, Collection<Callable<Found>> solvers) throws InterruptedException, ExecutionException {
 	     ExecutorCompletionService<Found> ecs = new ExecutorCompletionService<Found>(e);
-	     int n = solvers.size();
-	     List<Future<Found>> futures
-	         = new ArrayList<Future<Found>>(n);
-	     Found result = null;
 	     for (Callable<Found> s : solvers)
-	         futures.add(ecs.submit(s));
-	     for (Future<Found> f : futures) {
-	    	 result = f.get();
+	         ecs.submit(s);
+	     for (int i = 0; i < solvers.size(); i++) {
+	    	 Found result = ecs.take().get();
 	         if (result != null) {
 	             System.out.println(result.getFileName() +" completed.");
 	             System.out.println(result);
